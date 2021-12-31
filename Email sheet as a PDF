@@ -1,0 +1,66 @@
+function emailSpreadsheetAsPDF() {
+  DocumentApp.getActiveDocument();
+  DriveApp.getFiles();
+
+  var todayDate     = new Date(); // Get todays date in epoch standard
+  var preDate       = new Date(); // Get previous day date in epoch standard
+  preDate.setDate(todayDate.getDate()-1); // Set the date for -1 from today in epoch standard  
+  var todayFile     = Utilities.formatDate(preDate, "GMT", "dd/MM/yyyy"); // Format yesterday to dd/mm/yyyy to Match Tab names
+  var fileNamePdf    = 'set filename here' + ' ' + todayFile + '.pdf'; //name filename here
+
+  // This is the link to my spreadsheet with the Form responses and the Invoice Template sheets
+  // Add the link to your spreadsheet here 
+  // or you can just replace the text in the link between "d/" and "/edit"
+  const ss = SpreadsheetApp.openByUrl("https://docs.google.com/spreadsheets/d/1Zi1bZFfCgatmE_TGLotxSqoRApAal-j3NGLr2tYwL9s/edit");
+
+ // Get the sheet where the data is, in sheet 'Email' 
+  var sheet = SpreadsheetApp.getActiveSpreadsheet().getSheetByName("Email") 
+  var startRow = 2;   // First row of data to process since there is a header row 
+  var numRows = sheet.getRange(1,5).getValue();   // Number of rows to process is set by a formula which counts rows 
+  var msgsub  = sheet.getRange(3,5).getValue();
+  var msgline3= sheet.getRange(6,5).getValue();
+  
+  // Fetch the range of cells A2:B6 where the emails and names are 
+  var dataRange = sheet.getRange(startRow, 1, numRows, 2) 
+  // Fetch values for each row in the Range to input into the mailing system 
+  var data = dataRange.getValues(); 
+  // This processes the emails you want to send 
+  var emailAddress = "";
+  for (i in data) { 
+   var row = data[i]; 
+   var emailAddress = emailAddress + row[0] + ","; // First column is the email address 
+  }  
+  var message = "Dear All,\n\n"+msgline3+" \n\nKind Regards,\n\nAdarsh Heaton\n\nFinance Analyst | Lanes Group PLC - Thames Water WNS"; // Second column is the Name 
+
+  // Again, the URL to your spreadsheet but now with "/export" at the end
+  // Change it to the link of your spreadsheet, but leave the "/export?"
+  const url = 'https://docs.google.com/spreadsheets/d/1Zi1bZFfCgatmE_TGLotxSqoRApAal-j3NGLr2tYwL9s/export?';
+
+  const exportOptions =
+    'exportFormat=pdf&format=pdf' + // export as pdf
+    '&size=A4' + // paper size letter / You can use A4 or legal
+    '&portrait=true' + // orientation portal, use false for landscape
+    '&fitw=true' + // fit to page width false, to get the actual size
+    '&sheetnames=false&printtitle=false' + // hide optional headers and footers
+    '&pagenumbers=false&gridlines=false' + // hide page numbers and gridlines
+    '&fzr=false' + // do not repeat row headers (frozen rows) on each page
+    '&scale=4' + // fit to page
+    '&gid=1633541520'; // the sheet's Id. Change it to your sheet ID.
+  // You can find the sheet ID in the link bar. 
+  // Select the sheet that you want to print and check the link,
+  // the gid number of the sheet is on the end of your link.
+  
+  var params = {method:"GET",headers:{"authorization":"Bearer "+ ScriptApp.getOAuthToken()}};
+  
+  // Generate the PDF file
+  var response = UrlFetchApp.fetch(url+exportOptions, params).getBlob();
+  
+  // Send the PDF file as an attachement 
+    GmailApp.sendEmail(emailAddress, msgsub, message, {
+      attachments: [{
+            fileName: fileNamePdf,
+            content: response.getBytes(),
+            mimeType: "application/pdf"
+        }]
+    });  
+}
