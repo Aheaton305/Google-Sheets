@@ -1,0 +1,35 @@
+function compileData() { 
+
+  //this script writes over the data already there so if there is less lines then there will be old data at the bottom.
+
+  // Setup standard variables for tabs for this spreadsheet
+  var stackSpreadsheet          = SpreadsheetApp.getActiveSpreadsheet();
+  var sheetIdsSheet             = stackSpreadsheet.getSheetByName('sheet ids');
+  var tabIdSheet                = stackSpreadsheet.getSheetByName('tabIds');
+  var stackSheet                = stackSpreadsheet.getSheetByName('Stack');
+  var workbookIds               = sheetIdsSheet.getDataRange().getValues();
+  var tabIds                    = tabIdSheet.getDataRange().getValues();
+  var stackLastrow              = 3; //change this line to the bottom line of the data or where you want it to refresh from(after the header row)
+  stackSheet.getRange("A1").setValue("Last updated at "+new Date()).setNumberFormat("DD/MM/yyyy h:mm:ss"); //shows the date and time that the data refreshed
+
+   // Loop 1 - Set a to 0, while a is less then the number of rows in workbookids keep adding 1 to a
+      for (var a = 0;a < workbookIds.length;a++){
+    var loopSpreadsheetId       = workbookIds[a][0]; // gets the first column for row a in the array
+    var loopSpreadsheetRegion   = workbookIds[a][1]; // gets the second column for row a in the array
+    var loopSpreadSheet         = SpreadsheetApp.openById(loopSpreadsheetId); //replace with destination ID
+  
+  // Loop 2 - Set z to o, while z is less then the number of rows in tabids keep adding 1 to z
+      for (var z = 0;z < tabIds.length;z++){
+
+      // loop all the tabs for the current workbook based on a 
+      var loop2SheetId          = tabIds[z];
+      var loop2Sheet            = loopSpreadSheet.getSheetByName(loop2SheetId);
+      var loop2SheetData        = loop2Sheet.getDataRange().getValues();
+      loop2SheetData.splice(0, 7); //remove the first 7 rows
+      stackSheet.getRange(stackLastrow,1,loop2SheetData.length,loop2SheetData[0].length).setValues(loop2SheetData);
+      var stackLastrow =        stackLastrow+loop2SheetData.length+1;
+  // end Loop 2 z = last low in tab ids
+   } 
+  // end Loop 1 a = the last row of workbookids end
+
+}}
