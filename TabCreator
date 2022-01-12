@@ -1,0 +1,36 @@
+function listToTabs() {
+  var ss = SpreadsheetApp.getActiveSpreadsheet();
+  var sheet = ss.getSheetByName('Sheets Required');
+  var range = sheet.getDataRange();
+  var values = range.getValues();//This creates an array of the range  
+
+  // below sets the active sheet to Template so you dont have to remember.
+  SpreadsheetApp.getActive().getSheetByName('Template').activate();
+    
+ //Run the script to create the tabs 
+   
+    ss.renameActiveSheet('Template');
+    var lastRow = range.getLastRow();
+
+ 
+//need to loop going through each item in column A and creating a sheet for each name
+    //need to know how to call cell A2... etc... 
+    for(var k=1; k < lastRow; k++ ){
+      try{
+        var tabName = values[k][0];
+ var templateSheet = ss.getSheetByName('Template');
+          ss.insertSheet(tabName, {template:templateSheet});}
+         
+         
+      catch(err){
+         var tabName = values[k][0]+" " + k;
+        var templateSheet = ss.getSheetByName('Template');
+      ss.insertSheet(tabName, {template:templateSheet});}
+
+      // add value to a cell
+      SpreadsheetApp.getActiveSheet().getRange('I1').setValue(values[k][0]);
+
+      
+        }
+
+  }
