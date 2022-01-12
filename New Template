@@ -1,0 +1,25 @@
+function copyToTabs() {
+  var spreadsheet          = SpreadsheetApp.getActiveSpreadsheet();
+  var templateSheet        = spreadsheet.getSheetByName('Template'); //Template 
+  var sheetsRequiredSheet  = spreadsheet.getSheetByName('Sheets Required'); //Sheets Required Sheet
+  
+  var lastRow = sheetsRequiredSheet.getLastRow(); 
+  var tabNames = sheetsRequiredSheet.getRange(2,1,lastRow-1,1).getValues(); // returns 2d array with all the Sheet Tab Names
+  
+  tabNames.forEach(function(tabName){ 
+
+   var sheetToChange = spreadsheet.getSheetByName(tabName);     
+    // sheet to copy from , (first row, first col, last row, last col) >> Copy to sheet (first row, first col, last row, last col)
+    sheetToChange.getRange(1,9).copyTo(sheetToChange.getRange(1,10)); // copy date from I1 to J1
+    //sheetToChange.insertColumnAfter(4); //insert Priority column
+    //sheetToChange.insertColumnAfter(14); //insert Job Completed Column
+    //templateSheet.getRange(7,5).copyTo(sheetToChange.getRange(7,5)); //Name Priority Column
+    //templateSheet.getRange(7,16).copyTo(sheetToChange.getRange(7,15)); //Name Job Completed Column
+    //templateSheet.getRange(7,4).copyTo(sheetToChange.getRange(7,4)); //Rename Vistec ref column
+    //templateSheet.getRange(8,16,43).copyTo(sheetToChange.getRange(8,15,43)); //insert tick boxes in Job completed column
+    //templateSheet.getRange(4,12,1,2).copyTo(sheetToChange.getRange(4,12,1,2)); //replace total formulae
+    //templateSheet.getRange(2,11,1,3).copyTo(sheetToChange.getRange(2,11,1,3)); //replace IP + R Total text and formualae
+    //templateSheet.getRange(2,11,1,3).copyTo(sheetToChange.getRange(2,11,1,3), {formatOnly:true}); //this paste the format only which can be used for updating data validation rules
+    
+  });
+  }
