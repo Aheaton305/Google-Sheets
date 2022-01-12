@@ -1,0 +1,9 @@
+function Active() {
+
+  //Selects todays tab and moves you to it  
+  var todayDate     = new Date(); // Get todays date in epoch standard
+  var Sheetname     = Utilities.formatDate(new Date(), "GMT", "dd/MM/yyyy"); 
+  
+    
+  SpreadsheetApp.getActive().getSheetByName(Sheetname).activate();
+}
