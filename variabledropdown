@@ -1,0 +1,68 @@
+
+//CREATE PRIMARY DROPDOWN LIST
+function createPrimaryDrpdwon() {
+  /* SET FOLLOWING VARIABLES */
+   
+  var dataSS           = "cause/rootcause";         //Name of the sheet that contain data for dropdown lists
+  var dropSS           = "Template Unable desk";      //Name of the sheet which dropdown list to be created
+  var primaryDataRange = "A2:A100";       //Data range for primary dropdown
+  var primaryDropRange = "F2:F1000";       //Range which primary dropdown set
+ 
+  var primaryDropList  = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(dataSS).getRange(primaryDataRange).getValues();
+  var primaryDropRange = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(dropSS).getRange(primaryDropRange);
+  var validationRule   = SpreadsheetApp.newDataValidation().requireValueInList(primaryDropList).build();
+   
+  primaryDropRange.setDataValidation(validationRule);
+}
+
+
+//CREATE SECONDARY DROPDOWN LIST
+function onEdit(){
+  /* SET FOLLOWING VARIABLES */
+  var dataSS       = "cause/rootcause";         //Name of the sheet that contain data for dropdown lists
+  var dropSS       = "Data Input";      //Name of the sheet which dropdown list to be created
+  var allDataRange = "A2:B100";       //Data range for dropdown list (both primary and dependent)
+  var primaryDDCol = 6;               //Column number of the primary drop down
+   
+  var dropSS_      = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(dropSS);
+  var dropDData    = SpreadsheetApp.getActiveSpreadsheet().getSheetByName(dataSS).getRange(allDataRange).getValues();
+  var activeCell   = dropSS_.getActiveCell();
+  var activeColumn = activeCell.getColumn();
+  var activeRow    = activeCell.getRow();
+   
+  if(activeColumn==primaryDDCol){
+    var dep_Col         = primaryDDCol+1;
+    var dep_Row         = activeRow;
+    var depCell         = dropSS_.getRange(dep_Row, dep_Col);
+    var primarySelected = activeCell.getValue();
+    var validationRule  = SpreadsheetApp.newDataValidation().requireValueInList(getDependentList(dropDData,primarySelected)).build();
+     
+    depCell.setDataValidation(validationRule);
+
+   
+  var ss = SpreadsheetApp.getActiveSheet();
+  var r = ss.getActiveCell();
+  //1.Change 'Unables' to be matching your sheet name
+  if (r.getColumn() < 9 && ss.getName()=='Data Input') { // i think this part is irrelavant?
+var celladdress ='J'+ r.getRowIndex() 
+    ss.getRange(celladdress).setValue(new Date()).setNumberFormat("DD/MM/yyyy h:mm:ss");
+  }
+};
+
+  }
+ 
+function getDependentList(dropDData,primarySelected){
+  var dependenList = [];
+  var j = 0;
+  if(dropDData != null){
+    for(i=0; i<dropDData.length; i++){
+      if(dropDData[i][0]==primarySelected){
+        dependenList[j] = dropDData[i][1];
+        j++;
+      }
+    }
+  }
+  return dependenList;
+}
+
+ 
