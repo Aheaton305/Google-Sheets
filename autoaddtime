@@ -1,0 +1,10 @@
+function onEdit() {
+
+  var ss = SpreadsheetApp.getActiveSheet();
+  var r = ss.getActiveCell();
+  
+//1.Change 'Unables' to be matching your sheet name
+  if (r.getColumn() == 2 && ss.getName()=='Inventory Movements') { //column that is edited to cause trigger. can be a row if "<" is used
+var celladdress ='A'+ r.getRowIndex() //column to add the time
+    ss.getRange(celladdress).setValue(new Date()).setNumberFormat("DD/MM/yyyy h:mm:ss"); //adds the date/tme to cell
+  }}
