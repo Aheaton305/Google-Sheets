@@ -1,0 +1,9 @@
+library(googlesheets4)
+library(magrittr)
+suppressMessages(gs4_auth(path = "C:/Users/Adarsh Heaton/Documents/googlesheets4_token.rds"))
+mysheet<-"https://docs.google.com/spreadsheets/d/1FGqOj7rgU2gc8crL6YyjNrwXSjflA-LjufEsetGtJMs/export?format=xlsx&gid=1FGqOj7rgU2gc8crL6YyjNrwXSjflA-LjufEsetGtJMs" //enter sheet id twice here
+
+mysheet %>%
+  gs4_browse() %>%
+  read_sheet(sheet = "WNS") -> //tab name
+  surveyresults
